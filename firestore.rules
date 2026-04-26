@@ -52,6 +52,12 @@ service cloud.firestore {
           
         allow delete: if isSignedIn() && request.auth.uid == userId;
       }
+      match /userData/habits {
+        allow get: if isSignedIn() && request.auth.uid == userId;
+        allow write: if isSignedIn() && request.auth.uid == userId
+          && incoming().keys().hasAll(['habits'])
+          && incoming().habits is list;
+      }
     }
   }
 }

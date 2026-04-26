@@ -1407,7 +1407,10 @@ function stopDrill() {
 
 // --- HABITS LOGIC ----------------------------------------------
 let myHabits = [];
-let todayStr = new Date().toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+function getTodayStr() {
+  return new Date().toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+}
+let todayStr = getTodayStr();
 
 
 
@@ -1432,7 +1435,7 @@ function renderHabits() {
   list.innerHTML = '';
   let doneToday = 0;
   
-  todayStr = new Date().toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+  todayStr = getTodayStr();
   
   myHabits.forEach(h => {
     if(!h.history) h.history = [];
@@ -1441,15 +1444,15 @@ function renderHabits() {
     
     let streak = 0;
     let d = new Date();
-    let currentStr = d.toLocaleDateString('en-CA');
+    let currentStr = d.toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
     if (!isDoneToday) {
        d.setDate(d.getDate()-1);
-       currentStr = d.toLocaleDateString('en-CA');
+       currentStr = d.toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
     }
     while(h.history.includes(currentStr)) {
        streak++;
        d.setDate(d.getDate()-1);
-       currentStr = d.toLocaleDateString('en-CA');
+       currentStr = d.toLocaleDateString('en-CA', {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
     }
 
     let historyDots = '';
@@ -1507,13 +1510,12 @@ function renderHabits() {
 }
 
 // Ensure the functions are on window to be callable from HTML
-window.loadHabits = loadHabits;
 window.renderHabits = renderHabits;
 window.addHabit = addHabit;
 window.toggleHabit = async function(id) {
   const h = myHabits.find(x => x.id === id);
   if(!h) return;
-  todayStr = new Date().toLocaleDateString('en-CA');
+  todayStr = getTodayStr();
   const idx = h.history.indexOf(todayStr);
   if(idx > -1) {
     h.history.splice(idx, 1);
@@ -1574,6 +1576,22 @@ window.addEventListener('load',function(){
     return doc(window._db, `users/${window._auth.currentUser.uid}/userData/habits`);
   };
 
+  // Handle errors as per guidelines
+  function handleFirestoreError(error, operationType, path) {
+    const errInfo = {
+      error: error instanceof Error ? error.message : String(error),
+      authInfo: {
+        userId: auth.currentUser?.uid,
+        email: auth.currentUser?.email,
+        emailVerified: auth.currentUser?.emailVerified,
+      },
+      operationType,
+      path
+    };
+    console.error('Firestore Error: ', JSON.stringify(errInfo));
+    throw new Error(JSON.stringify(errInfo));
+  }
+
   window.loadHabits = async function() {
     const ref = window.getHabitsDocRef();
     if (!ref) {
@@ -1597,7 +1615,7 @@ window.addEventListener('load',function(){
       }
       window.renderHabits();
     } catch(e) {
-      console.error("Habit Load Err:", e);
+      handleFirestoreError(e, 'get', ref.path);
     }
   };
 
@@ -1607,8 +1625,8 @@ window.addEventListener('load',function(){
     try {
       await setDoc(ref, {habits: window.myHabits}, {merge:true});
     } catch(e) {
-      console.error("Habit Save Err:", e);
-    } // Handle save
+      handleFirestoreError(e, 'write', ref.path);
+    }
   };
 
   window.doGoogleSignIn=()=>{
