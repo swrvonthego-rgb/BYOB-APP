@@ -519,10 +519,10 @@ html,body{height:100dvh;background:var(--darker);font-family:'Barlow Condensed',
         <!-- LOCAL -->
         <div class="music-panel" id="panelLocal">
           <div class="file-upload-area">
-            <input type="file" id="localFileInput" multiple accept="audio/*" style="display:none;" onchange="handleLocalFiles(this.files)"/>
-            <div class="btn-file-select" onclick="document.getElementById('localFileInput').click()" style="cursor:pointer;display:inline-block;">
+            <input type="file" id="localFileInput" multiple accept="audio/*,.mp3,.wav,audio/mpeg,audio/wav" style="display:none;" onchange="handleLocalFiles(this.files)"/>
+            <label class="btn-file-select" for="localFileInput" style="cursor:pointer;display:inline-block;">
               📁 SELECT MUSIC FILES
-            </div>
+            </label>
             <div class="file-count" id="fileCount">No files selected</div>
           </div>
           <div class="music-controls-row">
