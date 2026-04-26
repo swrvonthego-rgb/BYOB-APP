@@ -1,0 +1,5 @@
+{
+  "name": "BYOB APP",
+  "description": "This is the BYOB training timer app. It includes a warm-up fight and break segment for 10 rounds and 3 sessions.",
+  "requestFramePermissions": []
+}

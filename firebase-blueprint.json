@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "UserSetting": {
+      "title": "User Setting",
+      "description": "User preferences and settings.",
+      "type": "object",
+      "properties": {
+        "updatedAt": { "type": "string" },
+        "theme": { "type": "string" },
+        "playlists": { "type": "object" },
+        "userId": { "type": "string" }
+      },
+      "required": ["updatedAt", "userId"]
+    },
+    "Workout": {
+      "title": "Workout",
+      "description": "Custom workout preset.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "warmup": { "type": "number" },
+        "round": { "type": "number" },
+        "rest": { "type": "number" },
+        "bigRest": { "type": "number" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "warmup", "round", "rest", "bigRest", "userId"]
+    }
+  },
+  "firestore": {
+    "users/{userId}/settings/core": {
+      "schema": "UserSetting",
+      "description": "Core user settings"
+    },
+    "users/{userId}/workouts/{workoutId}": {
+      "schema": "Workout",
+      "description": "User custom workouts"
+    }
+  }
+}
